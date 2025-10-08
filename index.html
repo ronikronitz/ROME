@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rome Trip Planner</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">🗺️</span>
+      <h1>Rome Trip Lil P & Big RK</h1>
+    </div>
+    <div class="header-actions">
+      <button id="btn-layout" class="btn secondary" title="Toggle layout">List</button>
+      <button id="btn-theme" class="btn secondary" title="Toggle light/dark">Light</button>
+      <button id="btn-view-mode" class="btn secondary" title="Open a view-only version">View</button>
+      <button id="btn-print" class="btn secondary" title="Print / Save as PDF">Print / PDF</button>
+      <button id="btn-export" class="btn secondary viewer-hide" title="Export itinerary as JSON">Export</button>
+      <label class="btn file-label viewer-hide" title="Import itinerary from JSON">
+        Import <input type="file" id="file-import" accept="application/json" hidden>
+      </label>
+      <button id="btn-clear" class="btn danger viewer-hide" title="Clear everything">Clear</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar" aria-label="Days">
+      <div class="sidebar-header">
+        <h2>Days</h2>
+        <button id="btn-add-day" class="btn primary viewer-hide">+ Day</button>
+      </div>
+      <ul id="day-list" class="day-list" role="tablist" aria-orientation="vertical"></ul>
+    </aside>
+
+    <section class="content" aria-label="Activities">
+      <div class="day-toolbar">
+        <input id="day-title" class="input title" placeholder="Day title (e.g., Day 1 – Ancient Rome)">
+      <div class="day-actions">
+          <button id="btn-day-map" class="btn secondary" title="Show map for this day">Map</button>
+          <button id="btn-clean-dup" class="btn secondary viewer-hide" title="Remove duplicate activities in this day">Clean</button>
+          <button id="btn-duplicate-day" class="btn secondary viewer-hide" title="Duplicate day">Duplicate</button>
+          <button id="btn-delete-day" class="btn danger viewer-hide" title="Delete day">Delete</button>
+        </div>
+      </div>
+
+      <div class="activity-new viewer-hide">
+        <input id="new-time" class="input time" placeholder="09:00" aria-label="Time">
+        <input id="new-title" class="input" placeholder="Activity (e.g., Colosseum tour)" aria-label="Title">
+        <select id="new-category" class="input select" aria-label="Category">
+          <option value="">Category</option>
+          <option>Sight</option>
+          <option>Food</option>
+          <option>Gelato</option>
+          <option>Coffee</option>
+          <option>Walk</option>
+          <option>Shopping</option>
+          <option>Other</option>
+        </select>
+        <button id="btn-add-activity" class="btn primary">+ Add</button>
+      </div>
+
+      <ul id="activity-list" class="activity-list"></ul>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>Made with ❤️ Roni</span>
+  </footer>
+
+  <template id="tpl-day-item">
+    <li class="day-item" role="tab">
+      <button class="day-button"></button>
+      <div class="day-controls">
+        <button class="icon up viewer-hide" title="Move up" aria-label="Move day up">▲</button>
+        <button class="icon down viewer-hide" title="Move down" aria-label="Move day down">▼</button>
+      </div>
+    </li>
+  </template>
+
+  <template id="tpl-activity-item">
+    <li class="activity-item" draggable="true">
+      <div class="row-main">
+        <div class="drag-handle" title="Drag to reorder" aria-hidden="true">⋮⋮</div>
+        <input class="edit time" placeholder="09:00" aria-label="Time">
+        <input class="edit title" placeholder="Activity" aria-label="Title">
+        <select class="edit category" aria-label="Category">
+          <option value="">Category</option>
+          <option>Sight</option>
+          <option>Food</option>
+          <option>Gelato</option>
+          <option>Coffee</option>
+          <option>Walk</option>
+          <option>Shopping</option>
+          <option>Other</option>
+        </select>
+        <div class="row-actions">
+          <button class="icon toggle-notes" title="Notes">✎</button>
+          <button class="icon duplicate viewer-hide" title="Duplicate">⎘</button>
+          <button class="icon delete viewer-hide" title="Delete">🗑️</button>
+        </div>
+      </div>
+      <textarea class="edit notes" placeholder="Notes" hidden></textarea>
+    </li>
+  </template>
+
+  <div id="map-modal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="map-title">Day Map</h3>
+        <button id="map-close" class="btn secondary">Close</button>
+      </div>
+      <div id="map" class="map"></div>
+      <div class="modal-footer">
+        <small>Locations are approximate. Drag to explore; pinch or scroll to zoom.</small>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+<!--
+  Rome Trip Planner
+  - Edit activities inline
+  - Reorder via drag handle or day up/down
+  - Auto-saves to localStorage
+  - Print via the header button (uses print styles)
+-->
+</html>
+
+
